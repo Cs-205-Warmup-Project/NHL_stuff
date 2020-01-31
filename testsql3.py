@@ -14,5 +14,13 @@ cursor = conn.cursor()
 cursor.execute("SELECT * FROM game_goalie_stats ORDER BY time_on_ice ;")
 print(cursor.fetchall())
 
+#Create fucntion to take in varables and spit out data
+def retrieveDataFirstLast(firstName, lastName, keyWord):
+    #for test purpose
+    value = 31
+    cursor.execute("SELECT player_id FROM game_goalie_stats WHERE " + keyWord + "=?;",(value,))
+    print(cursor.fetchall())
+    
+retrieveDataFirstLast("test2", "test1", "saves")
 conn.commit()
 conn.close()
