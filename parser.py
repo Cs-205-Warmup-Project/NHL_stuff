@@ -17,7 +17,7 @@ def main():
             for i in range(0, len(inputList) - 3):
                 keyword += inputList[i] + " "
             keyword = keyword[0: len(keyword) - 1]
-            print("'" + keyword + "'")
+            #print("'" + keyword + "'")
 
             # Check if keyword is valid
             validKeyword = False
@@ -28,6 +28,8 @@ def main():
             # If keyword is invalid, tell user
             if(validKeyword == False):
                 print(keyword + " is not a valid keyword")
+            else:
+                queryDatabase(keyword, inputList[len(inputList) - 2], inputList[len(inputList) - 1])
 
 def help():
     print("Possible keywords:")
@@ -41,5 +43,9 @@ def help():
     print("Example query:")
     print("Goals Player Wayne Gretzky")
     print("This will retrieve the total number of goals scored by the player with the name Wayne Gretzky")
+
+def queryDatabase(keyword, firstName, lastName):
+    print("Searching database for " + keyword + " from " + firstName + " " + lastName)
+
 
 main()
