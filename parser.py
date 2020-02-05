@@ -29,7 +29,7 @@ def main():
             if(validKeyword == False):
                 print(keyword + " is not a valid keyword")
             else:
-                queryDatabase(keyword, inputList[len(inputList) - 2], inputList[len(inputList) - 1])
+                queryDatabaseKeyword(keyword, inputList[len(inputList) - 2], inputList[len(inputList) - 1])
 
 def help():
     print("Possible keywords:")
@@ -44,8 +44,14 @@ def help():
     print("Goals Player Wayne Gretzky")
     print("This will retrieve the total number of goals scored by the player with the name Wayne Gretzky")
 
-def queryDatabase(keyword, firstName, lastName):
+def queryDatabaseKeyword(keyword, firstName, lastName):
     print("Searching database for " + keyword + " from " + firstName + " " + lastName)
+
+def queryDatabaseListMyTeam(firstName, lastName):
+    print("Searching database for team of " + firstName + " " + lastName)
+
+def queryDatabaseTeammates(names):
+    print("Searching database for team of " + names[0][0])
 
 
 main()
