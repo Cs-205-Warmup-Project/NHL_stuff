@@ -20,6 +20,7 @@ def retrieveDataFirstLast(firstName, lastName, keyWord):
     value = 31
     cursor.execute("SELECT player_id FROM game_goalie_stats WHERE " + keyWord + "=?;",(value,))
     print(cursor.fetchall())
+
     
 retrieveDataFirstLast("test2", "test1", "saves")
 conn.commit()
