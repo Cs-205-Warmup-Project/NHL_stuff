@@ -2,6 +2,8 @@ import sqlite3
 from sqlite3 import Error
 import csv
 
+#ToDo Find a permanent way to remove the invisible characters ï»¿ from the beggening the player_info
+
 #Creating connection method.
 def createConnection(db_file):
     conn = None
