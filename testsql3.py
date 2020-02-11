@@ -15,7 +15,7 @@ cursor = conn.cursor()
 #cursor.execute("SELECT * FROM game_goalie_stats ORDER BY time_on_ice ;")
 #print(cursor.fetchall())
 #cursor.execute("SELECT * FROM game_goalie_stats;")
-cursor.execute("SELECT * FROM game_goalie_stats ORDER BY time_on_ice ;")
+cursor.execute("SELECT * FROM player_info ;")
 
 print(cursor.fetchall())
 
