@@ -12,6 +12,7 @@ print ("Opened database successfully");
 cursor = conn.cursor()
 #testing query of data
 cursor.execute("SELECT * FROM game_goalie_stats ORDER BY time_on_ice ;")
+cursor.execute("SELECT * FROM game_skater_stats ORDER BY time_on_ice ;")
 print(cursor.fetchall())
 
 #Create fucntion to take in varables and spit out data

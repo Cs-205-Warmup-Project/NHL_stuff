@@ -1,5 +1,7 @@
 import sqlite3
 from sqlite3 import Error
+import csv
+
 #Creating connection method.
 def createConnection(db_file):
     conn = None
@@ -52,6 +54,44 @@ def main():
         create_table(conn, sql_create_game_skater_table)
     else:
         print("Error, cannot create tables")
+
+    #Testing to see if the insert method works.
+    #iterate through csv file add intormation to dictionary then to column datastructure
+    with open('game_goalie_stats.csv', newline='') as goalie_stats_csv:
+        goalie_stats_dict = csv.DictReader(goalie_stats_csv)
+        goalie_stats_colm = [(i['player_id'], i['team_id'], i['time_on_ice'], i['assists'], i['goals'], i['shots'], i['saves']) for i in goalie_stats_dict]
+
+#Below code gives an error, working it it currently
+
+    with open('GameSkaterStats.csv', newline='') as game_skater_csv:
+        game_skater_dict = csv.DictReader(game_skater_csv)
+        skater_stats_colm = [(i['ï»¿player_id'], i['team_id'], i['time_on_ice'], i['assists'], i['goals'], i['shots'], i['hits']) for i in game_skater_dict]
+
+
+
+    with open('PlayerInfo1.csv', newline='') as player_info_csv:
+        player_info_dict = csv.DictReader(player_info_csv)
+        player_info_colm = [(i['ï»¿player_id'], i['firstName'], i['lastName'], i['primaryPosition']) for i in player_info_dict]
+#add column information to the sqlite3 table
+    cursor = conn.cursor()
+    cursor.executemany("INSERT INTO game_goalie_stats ( player_id, team_id, time_on_ice, assists, goals, shots, saves ) VALUES (?, ?, ?, ?, ?, ?, ?);", goalie_stats_colm)
+    cursor.executemany("INSERT INTO game_skater_stats ( player_id, team_id, time_on_ice, assists, goals, shots, hits ) VALUES (?, ?, ?, ?, ?, ?, ?);", skater_stats_colm)
+    cursor.executemany("INSERT INTO player_info ( player_id, firstName, lastName, primaryPosition ) VALUES (?, ?, ?, ?);", player_info_colm)
+
+    cursor.execute("SELECT * FROM game_goalie_stats ORDER BY time_on_ice ;")
+    print(cursor.fetchall())
+    print('\n')
+    cursor.execute("SELECT * FROM game_skater_stats ORDER BY time_on_ice ;")
+    print(cursor.fetchall())
+    print('\n')
+
+
+    # Dropping the tables
+    cursor.execute("DROP TABLE game_goalie_stats")
+    cursor.execute("DROP TABLE game_skater_stats")
+    cursor.execute("DROP TABLE player_info")
+
+
 #Now I need to add data to the tables.
 if __name__ == "__main__":
     main()
