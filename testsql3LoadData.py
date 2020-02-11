@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 
+#Creating the test database
 conn = sqlite3.connect('test.db')
 
 #information on openning csv found here
@@ -9,7 +10,9 @@ conn = sqlite3.connect('test.db')
 
 print ("Opened database successfully");
 
+
 cursor = conn.cursor()
+#Creating the table
 cursor.execute("CREATE TABLE game_goalie_stats (player_id, team_id, time_on_ice, assists, goals, shots, saves);")
 cursor.execute("CREATE TABLE game_skater_stats (player_id, team_id, time_on_ice, assists, goals, shots, hits);")
 cursor.execute("CREATE TABLE player_info (player_id, firstName, lastName, primaryPosition);")
@@ -23,14 +26,16 @@ with open('game_goalie_stats.csv', newline='') as goalie_stats_csv:
 
 with open('GameSkaterStats.csv', newline ='') as game_skater_csv:
     game_skater_dict = csv.DictReader(game_skater_csv)
-    for i in game_skater_dict:
-        print(i)
+    #for i in game_skater_dict:
+        #print(i)
     skater_stats_colm = [(i['player_id'], i['team_id'], i['time_on_ice'], i['assists'], i['goals'], i['shots'], i['hits']) for i in game_skater_dict]
 
-with open('PlayerInfo1.csv', newline = '') as player_info_csv:
+
+
+with open('PlayerInfo1.csv', newline='') as player_info_csv:
     player_info_dict = csv.DictReader(player_info_csv)
-    for i in player_info_dict:
-        print(i)
+    #for i in player_info_dict:
+        #print(i)
     player_info_colm = [(i['player_id'], i['firstName'], i['lastName'], i['primaryPosition']) for i in player_info_dict]
 
 
@@ -38,6 +43,12 @@ with open('PlayerInfo1.csv', newline = '') as player_info_csv:
 cursor.executemany("INSERT INTO game_goalie_stats ( player_id, team_id, time_on_ice, assists, goals, shots, saves ) VALUES (?, ?, ?, ?, ?, ?, ?);", goalie_stats_colm)
 cursor.executemany("INSERT INTO game_skater_stats ( player_id, team_id, time_on_ice, assists, goals, shots, hits ) VALUES (?, ?, ?, ?, ?, ?, ?);", skater_stats_colm)
 cursor.executemany("INSERT INTO player_info ( player_id, firstName, lastName, primaryPosition ) VALUES (?, ?, ?, ?);", player_info_colm)
+
+#Dropping the tables
+#cursor.execute("DROP TABLE game_goalie_stats")
+#cursor.execute("DROP TABLE game_skater_stats")
+#cursor.execute("DROP TABLE player_info")
+
 
 conn.commit()
 conn.close()

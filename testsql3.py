@@ -11,9 +11,12 @@ print ("Opened database successfully");
 
 cursor = conn.cursor()
 #testing query of data
+
 #cursor.execute("SELECT * FROM game_goalie_stats ORDER BY time_on_ice ;")
 #print(cursor.fetchall())
-cursor.execute("SELECT * FROM game_goalie_stats;")
+#cursor.execute("SELECT * FROM game_goalie_stats;")
+cursor.execute("SELECT * FROM game_goalie_stats ORDER BY time_on_ice ;")
+
 print(cursor.fetchall())
 
 #Create fucntion to take in varables and spit out data
@@ -28,6 +31,8 @@ def retrieveDataFirstLast(firstName, lastName, keyWord):
     #search for keyWord data based on player_id
     print(cursor.fetchall())
 
+
 retrieveDataFirstLast("test2", "Timonen", "saves")
+
 conn.commit()
 conn.close()
