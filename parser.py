@@ -1,7 +1,7 @@
 def main():
     inputString = ""
     possibleKeywords = ["Time On Ice", "Goals", "Assists", "Hits", "Saves", "Primary Position"]
-    while(inputString != "quit"):
+    while inputString != "quit":
         inputString = input("Enter query: ")
 
         dataLoaded = False
