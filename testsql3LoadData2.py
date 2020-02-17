@@ -2,8 +2,6 @@ import sqlite3
 from sqlite3 import Error
 import csv
 
-#ToDo Find a permanent way to remove the invisible characters ï»¿ from the beggening the player_info
-
 # The is empty method tests to see if the parameter structure is empty. Created to test if the player_id tuple is empty.
 # Sourced from: https://www.tutorialspoint.com/python_data_access/python_sqlite_drop_table.htm
 def is_empty(any_structure):
@@ -27,6 +25,52 @@ def create_table(conn, create_table_sql):
         c.execute(create_table_sql)
     except Error as e:
         print(e)
+
+#Return the team that Player firstName lastName is on
+def queryDatabaseListMyTeam(firstName, lastName,cursor):
+    #Creating lists to know what table player_id's are located in
+    goalieId = ["8455710","8468524","8471712","8476234","8468038","8474889"]
+    skaterID = ["8467412","8468501","8470609","8471816","8472410","8471233","8470920","8473646","8470610","8472382","8474641",
+                "8460626","8472394","8464977","8469454","8469623","8460465","8460542","8468486","8459670","8470640","8473512",
+                "8470601","8475640","8470171","8474892","8476177","8448208"]
+    #Checking to see if the player is found in the database
+    cursor.execute("SELECT player_id from player_info WHERE firstName=? AND lastName =?", (firstName, lastName))
+    player_id = cursor.fetchall()
+    if(is_empty(player_id)):
+        player_id = '1'
+    if(goalieId.count(player_id[0][0]) == 0 and skaterID.count(player_id[0][0]) == 0):
+        print("That player is not in the database")
+    try:
+        if(goalieId.count(player_id[0][0]) != 0):
+            cursor.execute("SELECT team_id from game_goalie_stats WHERE player_id=?", (player_id[0][0],))
+            team = cursor.fetchall()
+            teamName = ''
+            if(team[0][0] == '1'):
+                teamName = "New Jersey Devils"
+            elif(team[0][0] == '4'):
+                teamName = "Philadelphia Flyers"
+            elif(team[0][0] == '26'):
+                teamName = "Los Angeles King"
+            elif(team[0][0] == '6'):
+                teamName = "Boston Bruins"
+            print("Team of " + firstName + " " + lastName + " is " + teamName)
+        else:
+            cursor.execute("SELECT team_id from game_skater_stats WHERE player_id=?", (player_id[0][0],))
+            team = cursor.fetchall()
+            teamName = ''
+            if (team[0][0] == '1'):
+                teamName = "New Jersey Devils"
+            elif (team[0][0] == '4'):
+                teamName = "Philadelphia Flyers"
+            elif (team[0][0] == '26'):
+                teamName = "Los Angeles King"
+            elif (team[0][0] == '6'):
+                teamName = "Boston Bruins"
+            print("Team of " + firstName + " " + lastName + " is " + teamName)
+    except sqlite3.Error:
+        print("No data found for that query.\n")
+
+
 # keyword, firstName, lastName
 # def queryKeyword(keyword, firstName, lastName):
 # The retirveDataFirstLast method takes a firstName, lastName and a keyword
@@ -147,6 +191,7 @@ def main():
     retrieveDataFirstLast("Martin","Brodeur","hits",cursor)
     retrieveDataFirstLast("Martin","Brodeur","saves",cursor)
     retrieveDataFirstLast("Titos","&","soda",cursor)
+    queryDatabaseListMyTeam("Martin","Brodeur",cursor)
 
     # Dropping the tables
     # Information on dropping tables: https://www.tutorialspoint.com/python_data_access/python_sqlite_drop_table.htm
