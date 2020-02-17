@@ -1,7 +1,7 @@
 def main():
     inputString = ""
     databaseKeywords = ["Time On Ice", "Goals", "Assists", "Hits", "Saves", "Primary Position"]
-    while inputString != "quit":
+    while inputString != "Quit":
         inputString = input("Enter query: ")
 
         dataLoaded = False
@@ -13,6 +13,8 @@ def main():
         elif inputString == "Load Data":
             loadData()
             dataLoaded = True
+        elif inputString == "Quit":
+            1+1
         else:
             # Ensure that the data is loaded before completing a query
             if dataLoaded == False and queryCounter == 0:
@@ -31,7 +33,7 @@ def main():
 
             if playerIndex == -1:
                 print("Invalid syntax - no keyword 'Player")
-                break
+                #break
             # If the word "Player" is exists, then handle the query
             else:
                 # Determine the keyword
@@ -97,10 +99,18 @@ def help():
     print("'Shots'")
     print("'Hits'")
     print("'Saves")
+    print("'Teammates")
+    print("'List My Team")
     print("")
     print("Example query:")
     print("Goals Player Wayne Gretzky")
     print("This will retrieve the total number of goals scored by the player with the name Wayne Gretzky")
+    print("Example query:")
+    print("Teammates Player Wayne Gretzky Player Bob Smith")
+    print("This will retrieve whether or not Wayne Gretzky and Bob Smith are Teammates")
+    print("")
+    print("Or enter 'Quit' to exit")
+
 
 
 def loadData():
