@@ -1,72 +1,43 @@
 import sqlite3
 import csv
 
-#conn = sqlite3.connect('test.db')
-
-#information on openning csv found here
-#https://stackoverflow.com/questions/2887878/importing-a-csv-file-into-a-sqlite3-database-table-using-python
-#https://docs.python.org/3/library/csv.html
-
-#print ("Opened database successfully");
-
-#cursor = conn.cursor()
-#testing query of data
-
-#cursor.execute("SELECT * FROM game_goalie_stats ORDER BY time_on_ice ;")
-#print(cursor.fetchall())
-#cursor.execute("SELECT * FROM game_goalie_stats;")
-#cursor.execute("SELECT * FROM player_info ;")
-
-#print(cursor.fetchall())
-
-#Create fucntion to take in varables and spit out data
-#def retrieveDataFirstLast(firstName, lastName, keyWord):
-    #for test purpose
-    #value = 31
-    #cursor.execute("SELECT player_id FROM game_goalie_stats WHERE " + keyWord + "=?;",(value,))
-    #search for player id
-#    print(lastName)
-    #cursor.execute("SELECT * FROM player_info WHERE lastName=?;", (lastName,))
-#    cursor.execute("SELECT * FROM player_info;")
-    #search for keyWord data based on player_id
-#    print(cursor.fetchall())
+def is_empty(any_structure):
+    if any_structure:
+        return False
+    else:
+        return True
 
 def queryDatabaseListMyTeamMates(firstName, lastName):
     #database connection
     conn = sqlite3.connect('test.db')
     cursor = conn.cursor()
-    print("Searching database for team of " + firstName + " " + lastName)
     #error handleing cases need to go around this..
     cursor.execute("SELECT player_id FROM player_info WHERE  firstName=? AND lastName=?;", (firstName, lastName))
     playerIdArray = cursor.fetchall()
     if (playerIdArray == []):
-        print(firstName + " " + lastName + " not found in database")
         #close database connection
         conn.commit()
         conn.close()
-        return
+        return []
     playerId = playerIdArray[0][0]
-
     #get team id for player
     cursor.execute("SELECT team_id FROM game_skater_stats WHERE  player_id=?;", (playerId,))
     teamIdArray = cursor.fetchall()
     if (teamIdArray == []):
-        #print("Not found in game skater stats")
         cursor.execute("SELECT team_id FROM game_goalie_stats WHERE  player_id=?;", (playerId,))
         teamIdArray = cursor.fetchall()
         if (teamIdArray == []):
-            print("Team id not found contact developer for support")
             #close database connection
             conn.commit()
             conn.close()
-            return
+            return []
         teamId = teamIdArray[0][0]
 
     #get all other player ids with that team id
     cursor.execute("SELECT player_id FROM game_goalie_stats WHERE  team_id=?;", (teamId,))
     playerIdTeamArray = cursor.fetchall()
 
-    #print all the names with the set of player ids, in a array of tuples [(first, last), (first, last)...]
+    #return all the names with the set of player ids, in a array of tuples [(first, last), (first, last)...]
     nameListTuples = []
     for playerID in playerIdTeamArray:
         cursor.execute("SELECT firstName, lastName FROM player_info WHERE player_id=?;", playerID)
@@ -80,17 +51,10 @@ def queryDatabaseListMyTeamMates(firstName, lastName):
     conn.close()
     return nameListTuples
 
-def is_empty(any_structure):
-    if any_structure:
-        return False
-    else:
-        return True
-
 def retrieveDataFirstLast(firstName, lastName, keyWord):
     #database connection
     conn = sqlite3.connect('test.db')
     cursor = conn.cursor()
-
     #Checking to see if the player is found in the database
     cursor.execute("SELECT player_id from player_info WHERE firstName=? AND lastName =?", (firstName, lastName))
     player_id = cursor.fetchall()
@@ -102,7 +66,6 @@ def retrieveDataFirstLast(firstName, lastName, keyWord):
         if (goalieStats == []):
             cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
             if (skaterStats == []):
-                print("No data exists for that query\n")
                 #close database connection
                 conn.commit()
                 conn.close()
@@ -122,9 +85,8 @@ def retrieveDataFirstLast(firstName, lastName, keyWord):
         #close database connection
         conn.commit()
         conn.close()
-        print("No data exists for that query\n")
+        return ''
         
-#Return the team that Player firstName lastName is on
 def queryDatabaseMyTeamName(firstName, lastName):
     #database connection
     conn = sqlite3.connect('test.db')
@@ -173,15 +135,13 @@ def queryDatabaseMyTeamName(firstName, lastName):
             conn.commit()
             conn.close()
             return teamName
-            
-            #print("Team of " + firstName + " " + lastName + " is " + teamName)
+
     except sqlite3.Error:
         #close database connection
         conn.commit()
         conn.close()
         return ''
  
-#retrieveDataFirstLast("test2", "Timonen", "saves")
 names = queryDatabaseListMyTeamMates("Martin", "Jones")
 print(names)
 names = queryDatabaseListMyTeamMates("sadflk", "saldkfj")
@@ -189,9 +149,9 @@ print(names)
 #need to think about when stats for goalie only given to stat for skater...
 Stats = retrieveDataFirstLast("Martin", "Jones", "shots")
 print(Stats)
-Stats = retrieveDataFirstLast("Martin", "Jones", "shot")
+Stats = retrieveDataFirstLast("Martin", "Jones", "shotsdf")
 print(Stats)
 team = queryDatabaseMyTeamName("Martin","Brodeur")
 print(team)
-#conn.commit()
-#conn.close()
+team = queryDatabaseMyTeamName("made","up")
+print(team)

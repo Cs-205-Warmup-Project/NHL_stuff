@@ -2,7 +2,13 @@ import sqlite3
 from sqlite3 import Error
 import csv
 
-#ToDo Find a permanent way to remove the invisible characters ï»¿ from the beggening the player_info
+# The is empty method tests to see if the parameter structure is empty. Created to test if the player_id tuple is empty.
+# Sourced from: https://www.tutorialspoint.com/python_data_access/python_sqlite_drop_table.htm
+def is_empty(any_structure):
+    if any_structure:
+        return False
+    else:
+        return True
 
 #Creating connection method.
 def createConnection(db_file):
@@ -20,80 +26,183 @@ def create_table(conn, create_table_sql):
     except Error as e:
         print(e)
 
+#Return the team that Player firstName lastName is on
+def queryDatabaseListMyTeam(firstName, lastName,cursor):
+    #Creating lists to know what table player_id's are located in
+    goalieId = ["8455710","8468524","8471712","8476234","8468038","8474889"]
+    skaterID = ["8467412","8468501","8470609","8471816","8472410","8471233","8470920","8473646","8470610","8472382","8474641",
+                "8460626","8472394","8464977","8469454","8469623","8460465","8460542","8468486","8459670","8470640","8473512",
+                "8470601","8475640","8470171","8474892","8476177","8448208"]
+    #Checking to see if the player is found in the database
+    cursor.execute("SELECT player_id from player_info WHERE firstName=? AND lastName =?", (firstName, lastName))
+    player_id = cursor.fetchall()
+    if(is_empty(player_id)):
+        player_id = '1'
+    if(goalieId.count(player_id[0][0]) == 0 and skaterID.count(player_id[0][0]) == 0):
+        print("That player is not in the database")
+    try:
+        if(goalieId.count(player_id[0][0]) != 0):
+            cursor.execute("SELECT team_id from game_goalie_stats WHERE player_id=?", (player_id[0][0],))
+            team = cursor.fetchall()
+            teamName = ''
+            if(team[0][0] == '1'):
+                teamName = "New Jersey Devils"
+            elif(team[0][0] == '4'):
+                teamName = "Philadelphia Flyers"
+            elif(team[0][0] == '26'):
+                teamName = "Los Angeles King"
+            elif(team[0][0] == '6'):
+                teamName = "Boston Bruins"
+            print("Team of " + firstName + " " + lastName + " is " + teamName)
+        else:
+            cursor.execute("SELECT team_id from game_skater_stats WHERE player_id=?", (player_id[0][0],))
+            team = cursor.fetchall()
+            teamName = ''
+            if (team[0][0] == '1'):
+                teamName = "New Jersey Devils"
+            elif (team[0][0] == '4'):
+                teamName = "Philadelphia Flyers"
+            elif (team[0][0] == '26'):
+                teamName = "Los Angeles King"
+            elif (team[0][0] == '6'):
+                teamName = "Boston Bruins"
+            print("Team of " + firstName + " " + lastName + " is " + teamName)
+    except sqlite3.Error:
+        print("No data found for that query.\n")
+
+
+# keyword, firstName, lastName
+# def queryKeyword(keyword, firstName, lastName):
+# The retirveDataFirstLast method takes a firstName, lastName and a keyword
+# The first step is to find the player id where firstName = firstName and lastName = lastName
+# Then we need to check and see if that players id is found in the GameSkaterStats.csv or game_goalie_stats.csv
+# Once we know the location of the playerId we can then query as follows
+# Select keyWord from [table_name] where firstname = firstName and lastname = lastName
+def retrieveDataFirstLast(firstName, lastName, keyWord,cursor):
+    #Creating lists to know what table player_id's are located in
+    goalieId = ["8455710","8468524","8471712","8476234","8468038","8474889"]
+    skaterID = ["8467412","8468501","8470609","8471816","8472410","8471233","8470920","8473646","8470610","8472382","8474641",
+                "8460626","8472394","8464977","8469454","8469623","8460465","8460542","8468486","8459670","8470640","8473512",
+                "8470601","8475640","8470171","8474892","8476177","8448208"]
+    #Checking to see if the player is found in the database
+    cursor.execute("SELECT player_id from player_info WHERE firstName=? AND lastName =?", (firstName, lastName))
+    player_id = cursor.fetchall()
+    if(is_empty(player_id)):
+        player_id = '1'
+    if(goalieId.count(player_id[0][0]) == 0 and skaterID.count(player_id[0][0]) == 0):
+        print("That player is not in the database")
+    try:
+        if (keyWord == "assists"):
+            if(goalieId.count(player_id[0][0]) != 0):
+                cursor.execute("SELECT assists from game_goalie_stats WHERE player_id=?",(player_id[0][0],))
+                print(cursor.fetchall())
+            else:
+                cursor.execute("SELECT assists from game_skater_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+        elif (keyWord == "timeOnIce"):
+            if (goalieId.count(player_id[0][0]) != 0):
+                cursor.execute("SELECT time_on_ice from game_goalie_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+            else:
+                cursor.execute("SELECT time_on_ice from game_skater_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+        elif (keyWord == "shots"):
+            if (goalieId.count(player_id[0][0]) != 0):
+                cursor.execute("SELECT shots from game_goalie_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+            else:
+                cursor.execute("SELECT shots from game_skater_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+        elif (keyWord == "saves"):
+            if (goalieId.count(player_id[0][0]) != 0):
+                cursor.execute("SELECT saves from game_goalie_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+            else:
+                cursor.execute("SELECT saves from game_skater_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+        elif (keyWord == "goals"):
+            if (goalieId.count(player_id[0][0]) != 0):
+                cursor.execute("SELECT goals from game_goalie_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+            else:
+                cursor.execute("SELECT goals from game_skater_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+        # if the keyWord = hits then we know the player id will be found in the GameSkaterStats.csv
+        elif (keyWord == "hits"):
+            if (goalieId.count(player_id[0][0]) != 0):
+                cursor.execute("SELECT hits from game_goalie_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+            else:
+                cursor.execute("SELECT hits from game_skater_stats WHERE player_id=?", (player_id[0][0],))
+                print(cursor.fetchall())
+    except sqlite3.Error:
+        print("No data exists for that query\n")
+
+
 def main():
-    database = "test.db"
-
-    sql_create_player_info_table = """ CREATE TABLE IF NOT EXISTS playerInfo (
-                                  player_id integer PRIMARY KEY, 
-                                  firstName text NOT NULL,
-                                  lastName text NOT NULL,
-                                  primaryPosition text NOT NULL
-                                  );"""
-    sql_create_game_goalie_table = """ CREATE TABLE IF NOT EXISTS gameGoalie (
-                                        team_id integer PRIMARY KEY,
-                                        player_id REFERENCES playerInfo(player_id),
-                                        time_on_ice integer NOT NULL,
-                                        assists integer NOT NULL,
-                                        goals integer NOT NULL,
-                                        shots integer NOT NULL,
-                                        saves integer NOT NULL
-                                        );"""
-
-    sql_create_game_skater_table = """ CREATE TABLE IF NOT EXISTS gameSkater (
-                                        team_id integer PRIMARY KEY,
-                                        player_id REFERENCES playerInfo(player_id),
-                                        time_on_ice integer NOT NULL,
-                                        assists integer NOT NULL,
-                                        goals integer NOT NULL,
-                                        shots integer NOT NULL,
-                                        hits integer NOT NULL
-                                        );"""
-    conn = createConnection(database)
-
-    if conn is not None:
-        create_table(conn, sql_create_player_info_table)
-        create_table(conn, sql_create_game_goalie_table)
-        create_table(conn, sql_create_game_skater_table)
-    else:
-        print("Error, cannot create tables")
-
-    #Testing to see if the insert method works.
-    #iterate through csv file add intormation to dictionary then to column datastructure
-    with open('game_goalie_stats.csv', newline='') as goalie_stats_csv:
-        goalie_stats_dict = csv.DictReader(goalie_stats_csv)
-        goalie_stats_colm = [(i['player_id'], i['team_id'], i['time_on_ice'], i['assists'], i['goals'], i['shots'], i['saves']) for i in goalie_stats_dict]
-
-#Below code gives an error, working it it currently
-
-    with open('GameSkaterStats.csv', newline='') as game_skater_csv:
-        game_skater_dict = csv.DictReader(game_skater_csv)
-        skater_stats_colm = [(i['ï»¿player_id'], i['team_id'], i['time_on_ice'], i['assists'], i['goals'], i['shots'], i['hits']) for i in game_skater_dict]
-
-
-
-    with open('PlayerInfo1.csv', newline='') as player_info_csv:
-        player_info_dict = csv.DictReader(player_info_csv)
-        player_info_colm = [(i['ï»¿player_id'], i['firstName'], i['lastName'], i['primaryPosition']) for i in player_info_dict]
-#add column information to the sqlite3 table
+    conn = sqlite3.connect('test.db')
+    # information on openning csv found here
+    # https://stackoverflow.com/questions/2887878/importing-a-csv-file-into-a-sqlite3-database-table-using-python
+    # https://docs.python.org/3/library/csv.html
     cursor = conn.cursor()
-    cursor.executemany("INSERT INTO game_goalie_stats ( player_id, team_id, time_on_ice, assists, goals, shots, saves ) VALUES (?, ?, ?, ?, ?, ?, ?);", goalie_stats_colm)
-    cursor.executemany("INSERT INTO game_skater_stats ( player_id, team_id, time_on_ice, assists, goals, shots, hits ) VALUES (?, ?, ?, ?, ?, ?, ?);", skater_stats_colm)
-    cursor.executemany("INSERT INTO player_info ( player_id, firstName, lastName, primaryPosition ) VALUES (?, ?, ?, ?);", player_info_colm)
+    # Creating the table
+    cursor.execute("CREATE TABLE game_goalie_stats (player_id, team_id, time_on_ice, assists, goals, shots, saves);")
+    cursor.execute("CREATE TABLE game_skater_stats (player_id, team_id, time_on_ice, assists, goals, shots, hits);")
+    cursor.execute("CREATE TABLE player_info (player_id, firstName, lastName, primaryPosition);")
 
-    cursor.execute("SELECT * FROM game_goalie_stats ORDER BY time_on_ice ;")
-    print(cursor.fetchall())
-    print('\n')
-    cursor.execute("SELECT * FROM game_skater_stats ORDER BY time_on_ice ;")
-    print(cursor.fetchall())
-    print('\n')
-
+    # iterate through csv file add intormation to dictionary then to column datastructure
+    with open('game_goalie_stats.csv', newline='', encoding='utf-8') as goalie_stats_csv:
+        goalie_stats_dict = csv.DictReader(goalie_stats_csv)
+        goalie_stats_colm = [
+            (i['player_id'], i['team_id'], i['time_on_ice'], i['assists'], i['goals'], i['shots'], i['saves']) for i in
+            goalie_stats_dict]
+    goalie_stats_csv.close()
+    with open('GameSkaterStats.csv', newline='', encoding='utf-8-sig') as game_skater_csv:
+        # print(game_skater_csv)
+        game_skater_dict = csv.DictReader(game_skater_csv)
+        skater_stats_colm = [
+            (j['player_id'], j['team_id'], j['time_on_ice'], j['assists'], j['goals'], j['shots'], j['hits']) for j in
+            game_skater_dict]
+    game_skater_csv.close()
+    # Ask what this does
+    """used for testing the encoding format of the file + figuring out extra character removal
+    with open('GameSkaterStats.csv', newline='', encoding='utf-8-sig', errors='replace') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            print(row[0])
+            if (row[0] != "player_id"):
+                #game_skater_dict_tmp['player_id'] = row[0]
+                print(row)
+    """
+    with open('PlayerInfo1.csv', newline='', encoding='utf-8-sig') as player_info_csv:
+        player_info_dict = csv.DictReader(player_info_csv)
+        player_info_colm = [(i['player_id'], i['firstName'], i['lastName'], i['primaryPosition']) for i in player_info_dict]
+    # Inserting data into the different tables
+    cursor.executemany(
+        "INSERT INTO game_goalie_stats ( player_id, team_id, time_on_ice, assists, goals, shots, saves ) VALUES (?, ?, ?, ?, ?, ?, ?);",
+        goalie_stats_colm)
+    cursor.executemany(
+        "INSERT INTO game_skater_stats ( player_id, team_id, time_on_ice, assists, goals, shots, hits ) VALUES (?, ?, ?, ?, ?, ?, ?);",
+        skater_stats_colm)
+    cursor.executemany("INSERT INTO player_info ( player_id, firstName, lastName, primaryPosition ) VALUES (?, ?, ?, ?);",
+                       player_info_colm)
+    # Testing my retrieveDataFirstLast method
+    retrieveDataFirstLast("Martin","Brodeur","saves",cursor)
+    retrieveDataFirstLast("Martin","Brodeur","hits",cursor)
+    retrieveDataFirstLast("Martin","Brodeur","saves",cursor)
+    retrieveDataFirstLast("Titos","&","soda",cursor)
+    queryDatabaseListMyTeam("Martin","Brodeur",cursor)
 
     # Dropping the tables
+    # Information on dropping tables: https://www.tutorialspoint.com/python_data_access/python_sqlite_drop_table.htm
     cursor.execute("DROP TABLE game_goalie_stats")
     cursor.execute("DROP TABLE game_skater_stats")
     cursor.execute("DROP TABLE player_info")
 
+    # executing the dropping of the tables. Allows for program to be run repeatedly
+    conn.commit()
+    conn.close()
 
-#Now I need to add data to the tables.
+
 if __name__ == "__main__":
     main()
