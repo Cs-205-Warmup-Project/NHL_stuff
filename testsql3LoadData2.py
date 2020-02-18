@@ -40,6 +40,7 @@ def queryDatabaseListMyTeam(firstName, lastName,cursor):
         player_id = '1'
     if(goalieId.count(player_id[0][0]) == 0 and skaterID.count(player_id[0][0]) == 0):
         print("That player is not in the database")
+
     try:
         if(goalieId.count(player_id[0][0]) != 0):
             cursor.execute("SELECT team_id from game_goalie_stats WHERE player_id=?", (player_id[0][0],))
@@ -54,7 +55,7 @@ def queryDatabaseListMyTeam(firstName, lastName,cursor):
             elif(team[0][0] == '6'):
                 teamName = "Boston Bruins"
             print("Team of " + firstName + " " + lastName + " is " + teamName)
-        else:
+        elif(skaterID.count(player_id[0][0] != 0)):
             cursor.execute("SELECT team_id from game_skater_stats WHERE player_id=?", (player_id[0][0],))
             team = cursor.fetchall()
             teamName = ''
@@ -192,6 +193,8 @@ def main():
     retrieveDataFirstLast("Martin","Brodeur","saves",cursor)
     retrieveDataFirstLast("Titos","&","soda",cursor)
     queryDatabaseListMyTeam("Martin","Brodeur",cursor)
+    queryDatabaseListMyTeam("Martin","B",cursor)
+
 
     # Dropping the tables
     # Information on dropping tables: https://www.tutorialspoint.com/python_data_access/python_sqlite_drop_table.htm
