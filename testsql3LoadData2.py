@@ -147,9 +147,9 @@ def main():
     # https://docs.python.org/3/library/csv.html
     cursor = conn.cursor()
     # Creating the table
-    cursor.execute("CREATE TABLE game_goalie_stats (player_id, team_id, time_on_ice, assists, goals, shots, saves);")
-    cursor.execute("CREATE TABLE game_skater_stats (player_id, team_id, time_on_ice, assists, goals, shots, hits);")
-    cursor.execute("CREATE TABLE player_info (player_id, firstName, lastName, primaryPosition);")
+    cursor.execute("CREATE TABLE player_info (player_id PRIMARY KEY, firstName, lastName, primaryPosition);")
+    cursor.execute("CREATE TABLE game_goalie_stats (player_id, team_id, time_on_ice, assists, goals, shots, saves, FOREIGN KEY(player_id) REFERENCES player_info(player_id));")
+    cursor.execute("CREATE TABLE game_skater_stats (player_id, team_id, time_on_ice, assists, goals, shots, hits, FOREIGN KEY(player_id) REFERENCES player_info(player_id));")
 
     # iterate through csv file add intormation to dictionary then to column datastructure
     with open('game_goalie_stats.csv', newline='', encoding='utf-8') as goalie_stats_csv:
