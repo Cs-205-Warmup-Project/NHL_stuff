@@ -1,35 +1,96 @@
 def main():
     inputString = ""
-    possibleKeywords = ["Time On Ice", "Goals", "Assists", "Hits", "Saves"]
-    while(inputString != "quit"):
+    databaseKeywords = ["Time On Ice", "Goals", "Assists", "Hits", "Saves", "Primary Position"]
+    while inputString != "Quit":
         inputString = input("Enter query: ")
 
-        # If user inputs "help" print out possible keywords
-        if(inputString == "help"):
+        dataLoaded = False
+        queryCounter = 0
+
+        # If user inputs "Help", then print out possible keywords
+        if inputString == "Help":
             help()
+        # If user inputs "Load Data", then load the data
+        elif inputString == "Load Data":
+            loadData()
+            dataLoaded = True
         else:
+            # Ensure that the data is loaded before completing a query
+            if dataLoaded == False and queryCounter == 0:
+                print("Data has not been loaded, please enter 'Load Data'")
+
             # Split the string into each word
             inputList = inputString.split()
-            #print(inputList)
+            print(inputList)
 
-            # Get the keyword (can be multiple words like Time On Ice
-            keyword = ""
-            for i in range(0, len(inputList) - 3):
-                keyword += inputList[i] + " "
-            keyword = keyword[0: len(keyword) - 1]
-            #print("'" + keyword + "'")
+            # Determine where the word "Player" is in the input string
+            playerIndex = -1
+            for i in range(0, len(inputList)):
+                if inputList[i] == "Player":
+                    playerIndex = i
+                    break
 
-            # Check if keyword is valid
-            validKeyword = False
-            for possibleKeyword in possibleKeywords:
-                if(keyword == possibleKeyword):
-                    validKeyword = True
+            # If playerIndex was not updated in loop above, then there was invalid syntax
+            if playerIndex == -1:
+                print("Invalid Syntax - no keyword 'Player")
+                #break
 
-            # If keyword is invalid, tell user
-            if(validKeyword == False):
-                print(keyword + " is not a valid keyword")
+            # If the word "Player" is exists, then handle the query
             else:
-                queryDatabaseKeyword(keyword, inputList[len(inputList) - 2], inputList[len(inputList) - 1])
+                # Determine the keyword
+                keyword = ""
+                for i in range(0, playerIndex):
+                    keyword += inputList[i] + " "
+
+                keyword = keyword[0: len(keyword) - 1]
+                print("keyword = " + keyword)
+
+                # Handle database keyword queries
+                invalidKeyword = True
+                for possibleKeyword in databaseKeywords:
+                    if keyword == possibleKeyword:
+                        invalidKeyword = False
+                        queryCounter += 1
+                        if len(inputList) == playerIndex + 3:
+                            firstName = inputList[playerIndex + 1]
+                            lastName = inputList[playerIndex + 2]
+                            queryDatabaseKeyword(keyword, firstName, lastName)
+                        else:
+                            print("Invalid Syntax - need player's full name")
+
+                # Handle List My Team keyword queries
+                if keyword == "List My Team":
+                    invalidKeyword = False
+                    queryCounter += 1
+                    if len(inputList) == playerIndex + 3:
+                        firstName = inputList[playerIndex + 1]
+                        lastName = inputList[playerIndex + 2]
+                        queryDatabaseListMyTeam(firstName, lastName)
+                    else:
+                        print("Invalid Syntax - need player's full name")
+
+                # Handle Teammates keyword queries
+                if keyword == "Teammates":
+                    invalidKeyword = False
+                    queryCounter += 1
+                    names = []
+                    playerCount = 0
+                    for i in range(0, len(inputList)):
+                        if inputList[i] == "Player":
+                            playerCount += 1
+
+                    if len(inputList) == (playerCount * 3) + 1:
+                        for i in range(playerIndex, len(inputList) - 1, 3):
+                            playerTuple = (inputList[i+1], inputList[i+2])
+                            names.append(playerTuple)
+                            queryDatabaseTeammates(names)
+                    else:
+                        print("Invalid Syntax - 'Player <first name> <last name>'")
+
+                # Handle if the keyword is invalid
+                if invalidKeyword:
+                    print("Invalid Syntax - '" + keyword + "' is an invalid keyword")
+
 
 def help():
     print("Possible keywords:")
@@ -39,19 +100,37 @@ def help():
     print("'Shots'")
     print("'Hits'")
     print("'Saves")
+    print("'Teammates")
+    print("'List My Team")
     print("")
     print("Example query:")
     print("Goals Player Wayne Gretzky")
     print("This will retrieve the total number of goals scored by the player with the name Wayne Gretzky")
+    print("Example query:")
+    print("List My Team Player Wayne Gretzky")
+    print("This will retrieve the team Wayne Gretzky plays on")
+    print("Example query:")
+    print("Teammates Player Wayne Gretzky Player Bob Smith")
+    print("This will retrieve whether or not Wayne Gretzky and Bob Smith are Teammates")
+    print("")
+    print("Or enter 'Quit' to exit")
+
+
+
+def loadData():
+    print("Loading data")
+
 
 def queryDatabaseKeyword(keyword, firstName, lastName):
     print("Searching database for " + keyword + " from " + firstName + " " + lastName)
 
+
 def queryDatabaseListMyTeam(firstName, lastName):
-    print("Searching database for team of " + firstName + " " + lastName)
+    print("Searching database the team of " + firstName + " " + lastName)
+
 
 def queryDatabaseTeammates(names):
-    print("Searching database for team of " + names[0][0])
+    print("Searching database for teammates of " + str(names))
 
 
 main()
