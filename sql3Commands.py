@@ -64,12 +64,15 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
     if(is_empty(player_id)):
         player_id = '1'
     #try:
-    print("IN TRY")
-    cursor.execute("SELECT " + keyWord + " from game_goalie_stats WHERE player_id=?",(player_id[0][0],))
-    goalieStats = cursor.fetchall()
-    print(goalieStats)
+    #print("IN TRY")
+    try:
+        cursor.execute("SELECT " + keyWord + " from game_goalie_stats WHERE player_id=?",(player_id[0][0],))
+        goalieStats = cursor.fetchall()
+        print(goalieStats)
+    except:
+        goalieStats = []
     if (goalieStats == []):
-        print("IN SKATER STATS")
+        #print("IN SKATER STATS")
         cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
         skaterStats = cursor.fetchall()
         if (skaterStats == []):
@@ -156,10 +159,10 @@ names = queryDatabaseListMyTeamMates("Alexei", "Ponikarovsky", conn)
 print(names)
 names = queryDatabaseListMyTeamMates("sadflk", "saldkfj", conn)
 print(names)
-#need to think about when stats for goalie only given to stat for skater...
-Stats = retrieveDataFirstLast("Keith", "Kinkaid", "shots", conn)
-print(Stats)
 conn.close()
+#need to think about when stats for goalie only given to stat for skater...
+#Stats = retrieveDataFirstLast("Martin", "Jones", "shots")
+#print(Stats)
 #Stats = retrieveDataFirstLast("Martin", "Jones", "shotsdf")
 #print(Stats)
 #team = queryDatabaseMyTeamName("Martin","Brodeur")
