@@ -26,7 +26,13 @@ def create_table(conn, create_table_sql):
     except Error as e:
         print(e)
 
-#Return the team that Player firstName lastName is on
+# def of queryDatabaseListMyTeam
+# takes a firstName and lastName
+# first step is to get player_id where firstName = firstName and lastName = lastName.
+# Then find which table that player_id is in
+# Then get the team_id and return the teamName associated with that team_id
+# Return the team that Player firstName lastName is on
+
 def queryDatabaseListMyTeam(firstName, lastName,cursor):
     #Creating lists to know what table player_id's are located in
     goalieId = ["8455710","8468524","8471712","8476234","8468038","8474889"]
@@ -64,9 +70,15 @@ def queryDatabaseListMyTeam(firstName, lastName,cursor):
             elif (team[0][0] == '4'):
                 teamName = "Philadelphia Flyers"
             elif (team[0][0] == '26'):
-                teamName = "Los Angeles King"
+                teamName = "San Jose Sharks"
             elif (team[0][0] == '6'):
                 teamName = "Boston Bruins"
+            elif (team[0][0] == '5'):
+                teamName = "Albany Devils"
+            elif (team[0][0] == '14'):
+                teamName = "Montreal Canadiens"
+            elif (team[0][0] == '7'):
+                teamName = "Los Angeles Kings"
             print("Team of " + firstName + " " + lastName + " is " + teamName)
     except sqlite3.Error:
         print("No data found for that query.\n")
