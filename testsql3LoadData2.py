@@ -70,9 +70,15 @@ def queryDatabaseListMyTeam(firstName, lastName,cursor):
             elif (team[0][0] == '4'):
                 teamName = "Philadelphia Flyers"
             elif (team[0][0] == '26'):
-                teamName = "Los Angeles King"
+                teamName = "San Jose Sharks"
             elif (team[0][0] == '6'):
                 teamName = "Boston Bruins"
+            elif (team[0][0] == '5'):
+                teamName = "Albany Devils"
+            elif (team[0][0] == '14'):
+                teamName = "Montreal Canadiens"
+            elif (team[0][0] == '7'):
+                teamName = "Los Angeles Kings"
             print("Team of " + firstName + " " + lastName + " is " + teamName)
     except sqlite3.Error:
         print("No data found for that query.\n")
