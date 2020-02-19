@@ -63,33 +63,36 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
     player_id = cursor.fetchall()
     if(is_empty(player_id)):
         player_id = '1'
-    try:
-        cursor.execute("SELECT " + keyWord + " from game_goalie_stats WHERE player_id=?",(player_id[0][0],))
-        goalieStats = cursor.fetchall()
-        if (goalieStats == []):
-            cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
-            skaterStats = cursor.fetchall()
-            if (skaterStats == []):
-                #update database connection
-                conn.commit()
-                return []
-            #iterate through all games to get totals
-            total = 0
-            for gameStat in skaterStats:
-                total = total + int(gameStat[0])
+    #try:
+    print("IN TRY")
+    cursor.execute("SELECT " + keyWord + " from game_goalie_stats WHERE player_id=?",(player_id[0][0],))
+    goalieStats = cursor.fetchall()
+    print(goalieStats)
+    if (goalieStats == []):
+        print("IN SKATER STATS")
+        cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
+        skaterStats = cursor.fetchall()
+        if (skaterStats == []):
             #update database connection
             conn.commit()
-            return total
+            return []
+        #iterate through all games to get totals
         total = 0
-        for gameStat in goalieStats:
+        for gameStat in skaterStats:
             total = total + int(gameStat[0])
         #update database connection
         conn.commit()
         return total
-    except sqlite3.Error:
+    total = 0
+    for gameStat in goalieStats:
+        total = total + int(gameStat[0])
+    #update database connection
+    conn.commit()
+    return total
+    #except sqlite3.Error:
         #update database connection
-        conn.commit()
-        return ''
+        #conn.commit()
+        #return 'abc'
         
 def queryDatabaseMyTeamName(firstName, lastName, conn):
     #database connection
