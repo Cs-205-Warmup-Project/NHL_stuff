@@ -2,8 +2,8 @@ import sql3Commands
 
 def main():
     inputString = ""
-    possibleKeywords = ["Time On Ice", "Goals", "Assists", "Hits", "Saves", "Primary Position"]
-    databaseKeywords = ["time_on_ice", "goals", "assists", "hits", "saves", "primary_position"]
+    possibleKeywords = ["Time On Ice", "Goals", "Assists", "Hits", "Saves", "Primary Position", "Shots"]
+    databaseKeywords = ["time_on_ice", "goals", "assists", "hits", "saves", "primary_position", "shots"]
     dataLoaded = False
     queryCounter = 0
     while inputString != "Quit":
@@ -53,7 +53,7 @@ def main():
                     # Handle database keyword queries
                     invalidKeyword = True
                     #for possibleKeyword in possibleKeywords:
-                    for i in range(6):
+                    for i in range(len(possibleKeywords)):
                         if keyword == possibleKeywords[i]:
                             keyword = databaseKeywords[i]
                             invalidKeyword = False
