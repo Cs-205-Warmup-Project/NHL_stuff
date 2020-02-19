@@ -101,6 +101,7 @@ def retrieveDataFirstLast(firstName, lastName, keyWord):
         goalieStats = cursor.fetchall()
         if (goalieStats == []):
             cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
+            skaterStats = cursor.fetchall()
             if (skaterStats == []):
                 print("No data exists for that query\n")
                 #close database connection
