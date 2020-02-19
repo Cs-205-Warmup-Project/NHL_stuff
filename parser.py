@@ -10,6 +10,8 @@ def main():
         # If user inputs "Help", then print out possible keywords
         if inputString == "Help":
             help()
+        elif inputString == "Quit":
+            break
         # If user inputs "Load Data", then load the data
         elif inputString == "Load Data":
             loadData()
@@ -32,7 +34,7 @@ def main():
 
             # If playerIndex was not updated in loop above, then there was invalid syntax
             if playerIndex == -1:
-                print("Invalid Syntax - no keyword 'Player")
+                print("Invalid Syntax - no keyword 'Player'")
                 #break
 
             # If the word "Player" is exists, then handle the query
