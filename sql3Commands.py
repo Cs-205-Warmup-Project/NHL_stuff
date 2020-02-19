@@ -33,11 +33,18 @@ def queryDatabaseListMyTeamMates(firstName, lastName, conn):
     teamId = teamIdArray[0][0]
 
     #get all other player ids with that team id
-    cursor.execute("SELECT player_id FROM game_goalie_stats WHERE  team_id=?;", (teamId,))
+    cursor.execute("SELECT player_id FROM game_goalie_stats WHERE team_id=?;", (teamId,))  
     playerIdTeamArray = cursor.fetchall()
-
+    print(playerIdTeamArray)
+    cursor.execute("SELECT player_id FROM game_skater_stats WHERE team_id=?;", (teamId,))
+    playerIds = cursor.fetchall()
+    print(playerIds)
+    playerIdTeamArray = playerIdTeamArray + playerIds
+    print(playerIdTeamArray)
     #return all the names with the set of player ids, in a array of tuples [(first, last), (first, last)...]
     nameListTuples = []
+    if (playerIdTeamArray == []):
+        return None
     for playerID in playerIdTeamArray:
         cursor.execute("SELECT firstName, lastName FROM player_info WHERE player_id=?;", playerID)
         firstLast = cursor.fetchall()
@@ -139,10 +146,15 @@ def queryDatabaseMyTeamName(firstName, lastName, conn):
 
         return ''
 
-#names = queryDatabaseListMyTeamMates("Martin", "Jones")
-#print(names)
-#names = queryDatabaseListMyTeamMates("sadflk", "saldkfj")
-#print(names)
+conn = sqlite3.connect('test.db')
+
+names = queryDatabaseListMyTeamMates("Martin", "Jones", conn)
+print(names)
+names = queryDatabaseListMyTeamMates("Alexei", "Ponikarovsky", conn)
+print(names)
+names = queryDatabaseListMyTeamMates("sadflk", "saldkfj", conn)
+print(names)
+conn.close()
 #need to think about when stats for goalie only given to stat for skater...
 #Stats = retrieveDataFirstLast("Martin", "Jones", "shots")
 #print(Stats)
