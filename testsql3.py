@@ -31,6 +31,12 @@ import csv
     #search for keyWord data based on player_id
 #    print(cursor.fetchall())
 
+# Def of queryDatabaeListMyTeamates
+# takes a firstName and lastName
+# first step is to get the player_id associated with firstName lastName,
+# then we find if that player is in the GameSkaterStats or the game_goalie_stats
+# finally returns an array of tuples of the teammates associated with the player_id of firstName lastName.
+
 def queryDatabaseListMyTeamMates(firstName, lastName):
     #database connection
     conn = sqlite3.connect('test.db')
@@ -80,12 +86,20 @@ def queryDatabaseListMyTeamMates(firstName, lastName):
     conn.close()
     return nameListTuples
 
+# The is empty method tests to see if the parameter structure is empty. Created to test if the player_id tuple is empty.
+# Sourced from: https://www.tutorialspoint.com/python_data_access/python_sqlite_drop_table.htm
 def is_empty(any_structure):
     if any_structure:
         return False
     else:
         return True
 
+# Def queryKeyword(keyword, firstName, lastName):
+# The retirveDataFirstLast method takes a firstName, lastName and a keyword
+# The first step is to find the player id where firstName = firstName and lastName = lastName
+# Then we need to check and see if that players id is found in the GameSkaterStats.csv or game_goalie_stats.csv
+# Once we know the location of the playerId we can then query as follows
+# Select keyWord from [table_name] where firstname = firstName and lastname = lastName
 def retrieveDataFirstLast(firstName, lastName, keyWord):
     #database connection
     conn = sqlite3.connect('test.db')
@@ -124,8 +138,8 @@ def retrieveDataFirstLast(firstName, lastName, keyWord):
         conn.commit()
         conn.close()
         print("No data exists for that query\n")
-        
-#Return the team that Player firstName lastName is on
+
+#
 def queryDatabaseMyTeamName(firstName, lastName):
     #database connection
     conn = sqlite3.connect('test.db')
