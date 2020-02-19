@@ -133,18 +133,18 @@ def loadData():
 
 
 def queryDatabaseKeyword(keyword, firstName, lastName, conn):
-    print("Searching database for " + keyword + " from " + firstName + " " + lastName)
+    #print("Searching database for " + keyword + " from " + firstName + " " + lastName)
     value = sql3Commands.retrieveDataFirstLast(firstName, lastName, keyword, conn)
     print(value)
 
 def queryDatabaseListMyTeam(firstName, lastName, conn):
-    print("Searching database the team of " + firstName + " " + lastName)
+    #print("Searching database the team of " + firstName + " " + lastName)
     value = sql3Commands.queryDatabaseMyTeamName(firstName, lastName, conn)
     print(value)
 
 
 def queryDatabaseTeammates(firstName, lastName, conn):
-    print("Searching database for teammates of " + firstName + " " + lastName)
+    #print("Searching database for teammates of " + firstName + " " + lastName)
     value = sql3Commands.queryDatabaseListMyTeamMates(firstName, lastName, conn)
     for name in value:
         print(name[0] + " " + name[1])
