@@ -72,18 +72,20 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
             if (skaterStats == []):
                 #update database connection
                 conn.commit()
-
                 return []
-            skaterStats = skaterStats[0][0]
+            #iterate through all games to get totals
+            total = 0
+            for gameStat in skaterStats:
+                total = total + int(gameStat[0])
             #update database connection
             conn.commit()
-
-            return skaterStats
-        goalieStats = goalieStats[0][0]
+            return total
+        total = 0
+        for gameStat in goalieStats:
+            total = total + int(gameStat[0])
         #update database connection
         conn.commit()
-
-        return goalieStats
+        return total
     except sqlite3.Error:
         #update database connection
         conn.commit()
@@ -151,10 +153,10 @@ names = queryDatabaseListMyTeamMates("Alexei", "Ponikarovsky", conn)
 print(names)
 names = queryDatabaseListMyTeamMates("sadflk", "saldkfj", conn)
 print(names)
-conn.close()
 #need to think about when stats for goalie only given to stat for skater...
-#Stats = retrieveDataFirstLast("Martin", "Jones", "shots")
-#print(Stats)
+Stats = retrieveDataFirstLast("Keith", "Kinkaid", "shots", conn)
+print(Stats)
+conn.close()
 #Stats = retrieveDataFirstLast("Martin", "Jones", "shotsdf")
 #print(Stats)
 #team = queryDatabaseMyTeamName("Martin","Brodeur")
