@@ -7,9 +7,8 @@ def is_empty(any_structure):
     else:
         return True
 
-def queryDatabaseListMyTeamMates(firstName, lastName):
+def queryDatabaseListMyTeamMates(firstName, lastName, conn):
     #database connection
-    conn = sqlite3.connect('test.db')
     cursor = conn.cursor()
     #error handleing cases need to go around this..
     cursor.execute("SELECT player_id FROM player_info WHERE  firstName=? AND lastName=?;", (firstName, lastName))
@@ -17,7 +16,7 @@ def queryDatabaseListMyTeamMates(firstName, lastName):
     if (playerIdArray == []):
         #close database connection
         conn.commit()
-        conn.close()
+
         return []
     playerId = playerIdArray[0][0]
     #get team id for player
@@ -29,9 +28,9 @@ def queryDatabaseListMyTeamMates(firstName, lastName):
         if (teamIdArray == []):
             #close database connection
             conn.commit()
-            conn.close()
+
             return []
-        teamId = teamIdArray[0][0]
+    teamId = teamIdArray[0][0]
 
     #get all other player ids with that team id
     cursor.execute("SELECT player_id FROM game_goalie_stats WHERE  team_id=?;", (teamId,))
@@ -48,12 +47,11 @@ def queryDatabaseListMyTeamMates(firstName, lastName):
     nameListTuples = list(set(nameListTuples))
     #close database connection
     conn.commit()
-    conn.close()
+
     return nameListTuples
 
-def retrieveDataFirstLast(firstName, lastName, keyWord):
+def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
     #database connection
-    conn = sqlite3.connect('test.db')
     cursor = conn.cursor()
     #Checking to see if the player is found in the database
     cursor.execute("SELECT player_id from player_info WHERE firstName=? AND lastName =?", (firstName, lastName))
@@ -65,31 +63,30 @@ def retrieveDataFirstLast(firstName, lastName, keyWord):
         goalieStats = cursor.fetchall()
         if (goalieStats == []):
             cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
+            skaterStats = cursor.fetchall()
             if (skaterStats == []):
                 #close database connection
                 conn.commit()
-                conn.close()
+
                 return []
-            skaterStats = cursor.fetchall()
             skaterStats = skaterStats[0][0]
             #close database connection
             conn.commit()
-            conn.close()
+
             return skaterStats
         goalieStats = goalieStats[0][0]
         #close database connection
         conn.commit()
-        conn.close()
+
         return goalieStats
     except sqlite3.Error:
         #close database connection
         conn.commit()
-        conn.close()
+
         return ''
         
-def queryDatabaseMyTeamName(firstName, lastName):
+def queryDatabaseMyTeamName(firstName, lastName, conn):
     #database connection
-    conn = sqlite3.connect('test.db')
     cursor = conn.cursor()
     
     #Checking to see if the player is found in the database
@@ -106,7 +103,7 @@ def queryDatabaseMyTeamName(firstName, lastName):
             if (team == []):
                 #close database connection
                 conn.commit()
-                conn.close()
+
                 return ''
             teamName = ''
             if (team[0][0] == '1'):
@@ -119,7 +116,7 @@ def queryDatabaseMyTeamName(firstName, lastName):
                 teamName = "Boston Bruins"
             #close database connection
             conn.commit()
-            conn.close()
+
             return teamName
         else:
             teamName = ''
@@ -133,25 +130,25 @@ def queryDatabaseMyTeamName(firstName, lastName):
                 teamName = "Boston Bruins"
             #close database connection
             conn.commit()
-            conn.close()
+
             return teamName
 
     except sqlite3.Error:
         #close database connection
         conn.commit()
-        conn.close()
+
         return ''
- 
-names = queryDatabaseListMyTeamMates("Martin", "Jones")
-print(names)
-names = queryDatabaseListMyTeamMates("sadflk", "saldkfj")
-print(names)
+
+#names = queryDatabaseListMyTeamMates("Martin", "Jones")
+#print(names)
+#names = queryDatabaseListMyTeamMates("sadflk", "saldkfj")
+#print(names)
 #need to think about when stats for goalie only given to stat for skater...
-Stats = retrieveDataFirstLast("Martin", "Jones", "shots")
-print(Stats)
-Stats = retrieveDataFirstLast("Martin", "Jones", "shotsdf")
-print(Stats)
-team = queryDatabaseMyTeamName("Martin","Brodeur")
-print(team)
-team = queryDatabaseMyTeamName("made","up")
-print(team)
+#Stats = retrieveDataFirstLast("Martin", "Jones", "shots")
+#print(Stats)
+#Stats = retrieveDataFirstLast("Martin", "Jones", "shotsdf")
+#print(Stats)
+#team = queryDatabaseMyTeamName("Martin","Brodeur")
+#print(team)
+#team = queryDatabaseMyTeamName("made","up")
+#print(team)
