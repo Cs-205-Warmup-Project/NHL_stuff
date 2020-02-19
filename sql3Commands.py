@@ -14,7 +14,7 @@ def queryDatabaseListMyTeamMates(firstName, lastName, conn):
     cursor.execute("SELECT player_id FROM player_info WHERE  firstName=? AND lastName=?;", (firstName, lastName))
     playerIdArray = cursor.fetchall()
     if (playerIdArray == []):
-        #close database connection
+        #update database connection
         conn.commit()
 
         return []
@@ -26,33 +26,31 @@ def queryDatabaseListMyTeamMates(firstName, lastName, conn):
         cursor.execute("SELECT team_id FROM game_goalie_stats WHERE  player_id=?;", (playerId,))
         teamIdArray = cursor.fetchall()
         if (teamIdArray == []):
-            #close database connection
+            #update database connection
             conn.commit()
-
             return []
     teamId = teamIdArray[0][0]
 
     #get all other player ids with that team id
     cursor.execute("SELECT player_id FROM game_goalie_stats WHERE team_id=?;", (teamId,))  
     playerIdTeamArray = cursor.fetchall()
-    print(playerIdTeamArray)
     cursor.execute("SELECT player_id FROM game_skater_stats WHERE team_id=?;", (teamId,))
     playerIds = cursor.fetchall()
-    print(playerIds)
     playerIdTeamArray = playerIdTeamArray + playerIds
-    print(playerIdTeamArray)
     #return all the names with the set of player ids, in a array of tuples [(first, last), (first, last)...]
     nameListTuples = []
     if (playerIdTeamArray == []):
         return None
     for playerID in playerIdTeamArray:
-        cursor.execute("SELECT firstName, lastName FROM player_info WHERE player_id=?;", playerID)
-        firstLast = cursor.fetchall()
-        nameListTuples.append(firstLast[0])
+        #print(playerID[0])
+        if (playerID[0] != playerId):
+            cursor.execute("SELECT firstName, lastName FROM player_info WHERE player_id=?;", playerID)
+            firstLast = cursor.fetchall()
+            nameListTuples.append(firstLast[0])
         
     #remove duplicates by sending it through a set
     nameListTuples = list(set(nameListTuples))
-    #close database connection
+    #update database connection
     conn.commit()
 
     return nameListTuples
@@ -72,24 +70,23 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
             cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
             skaterStats = cursor.fetchall()
             if (skaterStats == []):
-                #close database connection
+                #update database connection
                 conn.commit()
 
                 return []
             skaterStats = skaterStats[0][0]
-            #close database connection
+            #update database connection
             conn.commit()
 
             return skaterStats
         goalieStats = goalieStats[0][0]
-        #close database connection
+        #update database connection
         conn.commit()
 
         return goalieStats
     except sqlite3.Error:
-        #close database connection
+        #update database connection
         conn.commit()
-
         return ''
         
 def queryDatabaseMyTeamName(firstName, lastName, conn):
@@ -108,7 +105,7 @@ def queryDatabaseMyTeamName(firstName, lastName, conn):
             cursor.execute("SELECT team_id from game_skater_stats WHERE player_id=?", (player_id[0][0],))
             team = cursor.fetchall()
             if (team == []):
-                #close database connection
+                #update database connection
                 conn.commit()
 
                 return ''
@@ -121,7 +118,7 @@ def queryDatabaseMyTeamName(firstName, lastName, conn):
                 teamName = "Los Angeles King"
             elif (team[0][0] == '6'):
                 teamName = "Boston Bruins"
-            #close database connection
+            #update database connection
             conn.commit()
 
             return teamName
@@ -135,13 +132,13 @@ def queryDatabaseMyTeamName(firstName, lastName, conn):
                 teamName = "Los Angeles King"
             elif(team[0][0] == '6'):
                 teamName = "Boston Bruins"
-            #close database connection
+            #update database connection
             conn.commit()
 
             return teamName
 
     except sqlite3.Error:
-        #close database connection
+        #update database connection
         conn.commit()
 
         return ''
