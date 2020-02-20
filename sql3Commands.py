@@ -85,9 +85,16 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
         except:
             skaterStats = []
         if (skaterStats == []):
+            try:
+                cursor.execute("SELECT " + keyWord + " from player_info WHERE player_id=?",(player_id[0][0],))
+                playerStats = cursor.fetchall()
+                return playerStats[0][0]
+            except:
+                playerStats = []
             #update database connection
-            conn.commit()
-            return []
+            if (playerStats == []):
+                conn.commit()
+                return []
         #iterate through all games to get totals
         total = 0
         for gameStat in skaterStats:
