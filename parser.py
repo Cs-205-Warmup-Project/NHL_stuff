@@ -131,7 +131,6 @@ def help():
 
 
 def loadData():
-    #print("Loading data")
     conn = sql3Commands.sqlite3.connect('test.db')
     cursor = conn.cursor()
 
@@ -179,8 +178,6 @@ def loadData():
 
 
 def queryDatabaseKeyword(dbKeyword, keyword, firstName, lastName, conn):
-    #print("Searching database for " + keyword + " from " + firstName + " " + lastName)
-
     value = sql3Commands.retrieveDataFirstLast(firstName, lastName, dbKeyword, conn)
     if (value == []):
         print(firstName + " " + lastName + "'s " + keyword + " could not be found, please check the name and refer to Help")
@@ -188,7 +185,6 @@ def queryDatabaseKeyword(dbKeyword, keyword, firstName, lastName, conn):
         print(keyword + " = " + str(value))
 
 def queryDatabaseListMyTeam(firstName, lastName, conn):
-    #print("Searching database the team of " + firstName + " " + lastName)
     value = sql3Commands.queryDatabaseMyTeamName(firstName, lastName, conn)
     if (value == ""):
         print(firstName + " " +lastName + "'s team could not be found, please check the name and refer to Help")
@@ -197,7 +193,6 @@ def queryDatabaseListMyTeam(firstName, lastName, conn):
 
 
 def queryDatabaseTeammates(firstName, lastName, conn):
-    #print("Searching database for teammates of " + firstName + " " + lastName)
     value = sql3Commands.queryDatabaseListMyTeamMates(firstName, lastName, conn)
     if (value == []):
         print(
