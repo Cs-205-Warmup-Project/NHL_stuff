@@ -178,21 +178,30 @@ def queryDatabaseKeyword(dbKeyword, keyword, firstName, lastName, conn):
     #print("Searching database for " + keyword + " from " + firstName + " " + lastName)
 
     value = sql3Commands.retrieveDataFirstLast(firstName, lastName, dbKeyword, conn)
-
-    print(keyword + " = " + str(value))
+    if (value == []):
+        print(firstName + " " + lastName + "'s " + keyword + " could not be found, please check the name and refer to Help")
+    else:
+        print(keyword + " = " + str(value))
 
 def queryDatabaseListMyTeam(firstName, lastName, conn):
     #print("Searching database the team of " + firstName + " " + lastName)
     value = sql3Commands.queryDatabaseMyTeamName(firstName, lastName, conn)
-    print("Team = " + str(value))
+    if (value == ""):
+        print(firstName + " " +lastName + "'s team could not be found, please check the name and refer to Help")
+    else:
+        print("Team = " + str(value))
 
 
 def queryDatabaseTeammates(firstName, lastName, conn):
     #print("Searching database for teammates of " + firstName + " " + lastName)
     value = sql3Commands.queryDatabaseListMyTeamMates(firstName, lastName, conn)
-    print("Teammates:")
-    for name in value:
-        print("  " + name[0] + " " + name[1])
+    if (value == []):
+        print(
+            firstName + " " + lastName + "'s additional teammates could not be found, please check the name and refer to Help")
+    else:
+        print("Teammates:")
+        for name in value:
+            print("  " + name[0] + " " + name[1])
 
 
 main()

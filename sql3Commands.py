@@ -44,7 +44,7 @@ def queryDatabaseListMyTeamMates(firstName, lastName, conn):
     #return all the names with the set of player ids, in a array of tuples [(first, last), (first, last)...]
     nameListTuples = []
     if (playerIdTeamArray == []):
-        return None
+        return []
     for playerID in playerIdTeamArray:
         #print(playerID[0])
         if (playerID[0] != playerId):
@@ -79,8 +79,11 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
     except:
         goalieStats = []
     if (goalieStats == []):
-        cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
-        skaterStats = cursor.fetchall()
+        try:
+            cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
+            skaterStats = cursor.fetchall()
+        except:
+            skaterStats = []
         if (skaterStats == []):
             #update database connection
             conn.commit()
