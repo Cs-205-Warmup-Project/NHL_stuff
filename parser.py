@@ -27,85 +27,83 @@ def main():
         else:
             # Ensure that the data is loaded before completing a query
             if dataLoaded == False:
-                print("Loading Data")
-                loadData()
-                #print("Data has not been loaded, please enter 'Load Data'")
-
-
-            # Split the string into each word
-            inputList = inputString.split()
-
-            # Determine where the word "Player" is in the input string
-            playerIndex = -1
-            for i in range(0, len(inputList)):
-                if inputList[i] == "Player":
-                    playerIndex = i
-                    break
-
-            # If playerIndex was not updated in loop above, then there was invalid syntax
-            if playerIndex == -1:
-                print("Invalid Syntax - no keyword 'Player'")
-
-            # If the word "Player" is exists, then handle the query
+                print("Data has not been loaded, please enter 'Load Data'")
             else:
-                # Determine the keyword
-                keyword = ""
-                for i in range(0, playerIndex):
-                    keyword += inputList[i] + " "
 
-                keyword = keyword[0: len(keyword) - 1]
+                # Split the string into each word
+                inputList = inputString.split()
 
-                # Handle database keyword queries
-                invalidKeyword = True
-                #for possibleKeyword in possibleKeywords:
-                for i in range(len(possibleKeywords)):
-                    if keyword == possibleKeywords[i]:
-                        dbKeyword = databaseKeywords[i]
+                # Determine where the word "Player" is in the input string
+                playerIndex = -1
+                for i in range(0, len(inputList)):
+                    if inputList[i] == "Player":
+                        playerIndex = i
+                        break
+
+                # If playerIndex was not updated in loop above, then there was invalid syntax
+                if playerIndex == -1:
+                    print("Invalid Syntax - no keyword 'Player'")
+
+                # If the word "Player" is exists, then handle the query
+                else:
+                    # Determine the keyword
+                    keyword = ""
+                    for i in range(0, playerIndex):
+                        keyword += inputList[i] + " "
+
+                    keyword = keyword[0: len(keyword) - 1]
+
+                    # Handle database keyword queries
+                    invalidKeyword = True
+                    #for possibleKeyword in possibleKeywords:
+                    for i in range(len(possibleKeywords)):
+                        if keyword == possibleKeywords[i]:
+                            dbKeyword = databaseKeywords[i]
+                            invalidKeyword = False
+                            if (queryCounter == 0):
+                                # Open the connection
+                                conn = sql3Commands.sqlite3.connect('test.db')
+                            queryCounter += 1
+                            if len(inputList) == playerIndex + 3:
+                                firstName = inputList[playerIndex + 1]
+                                lastName = inputList[playerIndex + 2]
+                                queryDatabaseKeyword(dbKeyword, keyword, firstName, lastName, conn)
+                            else:
+                                print("Invalid Syntax - need player's full name")
+
+                    # Handle List My Team keyword queries
+                    if keyword == "List My Team":
                         invalidKeyword = False
-                        if (queryCounter == 0):
-                            # Open the connection
+                        if(queryCounter == 0):
+                            #Open the connection
                             conn = sql3Commands.sqlite3.connect('test.db')
                         queryCounter += 1
                         if len(inputList) == playerIndex + 3:
                             firstName = inputList[playerIndex + 1]
                             lastName = inputList[playerIndex + 2]
-                            queryDatabaseKeyword(dbKeyword, keyword, firstName, lastName, conn)
+                            queryDatabaseListMyTeam(firstName, lastName, conn)
                         else:
                             print("Invalid Syntax - need player's full name")
 
-                # Handle List My Team keyword queries
-                if keyword == "List My Team":
-                    invalidKeyword = False
-                    if(queryCounter == 0):
-                        #Open the connection
-                        conn = sql3Commands.sqlite3.connect('test.db')
-                    queryCounter += 1
-                    if len(inputList) == playerIndex + 3:
-                        firstName = inputList[playerIndex + 1]
-                        lastName = inputList[playerIndex + 2]
-                        queryDatabaseListMyTeam(firstName, lastName, conn)
-                    else:
-                        print("Invalid Syntax - need player's full name")
+                    # Handle Teammates keyword queries
+                    if keyword == "Teammates":
+                        invalidKeyword = False
+                        if(queryCounter == 0):
+                            #Open the connection
+                            conn = sql3Commands.sqlite3.connect('test.db')
+                        queryCounter += 1
 
-                # Handle Teammates keyword queries
-                if keyword == "Teammates":
-                    invalidKeyword = False
-                    if(queryCounter == 0):
-                        #Open the connection
-                        conn = sql3Commands.sqlite3.connect('test.db')
-                    queryCounter += 1
-
-                    if len(inputList) == playerIndex + 3:
-                        firstName = inputList[playerIndex + 1]
-                        lastName = inputList[playerIndex + 2]
-                        queryDatabaseTeammates(firstName, lastName, conn)
-                    else:
-                        print("Invalid Syntax - need player's full name")
+                        if len(inputList) == playerIndex + 3:
+                            firstName = inputList[playerIndex + 1]
+                            lastName = inputList[playerIndex + 2]
+                            queryDatabaseTeammates(firstName, lastName, conn)
+                        else:
+                            print("Invalid Syntax - need player's full name")
 
 
-                # Handle if the keyword is invalid
-                if invalidKeyword:
-                    print("Invalid Syntax - '" + keyword + "' is an invalid keyword")
+                    # Handle if the keyword is invalid
+                    if invalidKeyword:
+                        print("Invalid Syntax - '" + keyword + "' is an invalid keyword")
 
 
 def help():
