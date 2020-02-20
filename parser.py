@@ -4,7 +4,7 @@ import csv
 def main():
     inputString = ""
     possibleKeywords = ["Time On Ice", "Goals", "Assists", "Hits", "Saves", "Primary Position", "Shots"]
-    databaseKeywords = ["time_on_ice", "goals", "assists", "hits", "saves", "primary_position", "shots"]
+    databaseKeywords = ["time_on_ice", "goals", "assists", "hits", "saves", "primaryPosition", "shots"]
     dataLoaded = False
     queryCounter = 0
     while inputString != "Quit":
@@ -17,6 +17,10 @@ def main():
             break
         # If user inputs "Load Data", then load the data
         elif inputString == "Load Data":
+            if(dataLoaded == True):
+                print("Database previously loaded, overriding")
+            else:
+                print("Loading Data")
             dataLoaded = True
             loadData()
 
