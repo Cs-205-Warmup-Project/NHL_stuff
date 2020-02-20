@@ -7,6 +7,12 @@ def is_empty(any_structure):
     else:
         return True
 
+# def of queryDatabaseListMyTeam
+# takes a firstName and lastName
+# first step is to get player_id where firstName = firstName and lastName = lastName.
+# Then find which table that player_id is in
+# Then get the team_id and return the teamName associated with that team_id
+# Return the team that Player firstName lastName is on
 def queryDatabaseListMyTeamMates(firstName, lastName, conn):
     #database connection
     cursor = conn.cursor()
@@ -16,7 +22,6 @@ def queryDatabaseListMyTeamMates(firstName, lastName, conn):
     if (playerIdArray == []):
         #update database connection
         conn.commit()
-
         return []
     playerId = playerIdArray[0][0]
     #get team id for player
@@ -30,7 +35,6 @@ def queryDatabaseListMyTeamMates(firstName, lastName, conn):
             conn.commit()
             return []
     teamId = teamIdArray[0][0]
-
     #get all other player ids with that team id
     cursor.execute("SELECT player_id FROM game_goalie_stats WHERE team_id=?;", (teamId,))  
     playerIdTeamArray = cursor.fetchall()
@@ -47,14 +51,19 @@ def queryDatabaseListMyTeamMates(firstName, lastName, conn):
             cursor.execute("SELECT firstName, lastName FROM player_info WHERE player_id=?;", playerID)
             firstLast = cursor.fetchall()
             nameListTuples.append(firstLast[0])
-        
     #remove duplicates by sending it through a set
     nameListTuples = list(set(nameListTuples))
     #update database connection
     conn.commit()
-
     return nameListTuples
 
+# keyword, firstName, lastName
+# def queryKeyword(keyword, firstName, lastName):
+# The retirveDataFirstLast method takes a firstName, lastName and a keyword
+# The first step is to find the player id where firstName = firstName and lastName = lastName
+# Then we need to check and see if that players id is found in the GameSkaterStats.csv or game_goalie_stats.csv
+# Once we know the location of the playerId we can then query as follows
+# Select keyWord from [table_name] where firstname = firstName and lastname = lastName
 def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
     #database connection
     cursor = conn.cursor()
@@ -63,8 +72,6 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
     player_id = cursor.fetchall()
     if(is_empty(player_id)):
         player_id = '1'
-    #try:
-    #print("IN TRY")
     try:
         cursor.execute("SELECT " + keyWord + " from game_goalie_stats WHERE player_id=?",(player_id[0][0],))
         goalieStats = cursor.fetchall()
@@ -72,7 +79,6 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
     except:
         goalieStats = []
     if (goalieStats == []):
-        #print("IN SKATER STATS")
         cursor.execute("SELECT " + keyWord + " from game_skater_stats WHERE player_id=?",(player_id[0][0],))
         skaterStats = cursor.fetchall()
         if (skaterStats == []):
@@ -92,11 +98,13 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
     #update database connection
     conn.commit()
     return total
-    #except sqlite3.Error:
-        #update database connection
-        #conn.commit()
-        #return 'abc'
-        
+
+# def of queryDatabaseListMyTeam
+# takes a firstName and lastName
+# first step is to get player_id where firstName = firstName and lastName = lastName.
+# Then find which table that player_id is in
+# Then get the team_id and return the teamName associated with that team_id
+# Return the team that Player firstName lastName is on
 def queryDatabaseMyTeamName(firstName, lastName, conn):
     #database connection
     cursor = conn.cursor()
@@ -115,7 +123,6 @@ def queryDatabaseMyTeamName(firstName, lastName, conn):
             if (team == []):
                 #update database connection
                 conn.commit()
-
                 return ''
             teamName = ''
             if (team[0][0] == '1'):
@@ -128,7 +135,6 @@ def queryDatabaseMyTeamName(firstName, lastName, conn):
                 teamName = "Boston Bruins"
             #update database connection
             conn.commit()
-
             return teamName
         else:
             teamName = ''
@@ -142,30 +148,8 @@ def queryDatabaseMyTeamName(firstName, lastName, conn):
                 teamName = "Boston Bruins"
             #update database connection
             conn.commit()
-
             return teamName
-
     except sqlite3.Error:
         #update database connection
         conn.commit()
-
         return ''
-
-conn = sqlite3.connect('test.db')
-
-names = queryDatabaseListMyTeamMates("Martin", "Jones", conn)
-print(names)
-names = queryDatabaseListMyTeamMates("Alexei", "Ponikarovsky", conn)
-print(names)
-names = queryDatabaseListMyTeamMates("sadflk", "saldkfj", conn)
-print(names)
-conn.close()
-#need to think about when stats for goalie only given to stat for skater...
-#Stats = retrieveDataFirstLast("Martin", "Jones", "shots")
-#print(Stats)
-#Stats = retrieveDataFirstLast("Martin", "Jones", "shotsdf")
-#print(Stats)
-#team = queryDatabaseMyTeamName("Martin","Brodeur")
-#print(team)
-#team = queryDatabaseMyTeamName("made","up")
-#print(team)
