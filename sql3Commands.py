@@ -75,7 +75,7 @@ def retrieveDataFirstLast(firstName, lastName, keyWord, conn):
     try:
         cursor.execute("SELECT " + keyWord + " from game_goalie_stats WHERE player_id=?",(player_id[0][0],))
         goalieStats = cursor.fetchall()
-        print(goalieStats)
+        #print(goalieStats)
     except:
         goalieStats = []
     if (goalieStats == []):

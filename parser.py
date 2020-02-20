@@ -1,4 +1,5 @@
 import sql3Commands
+import csv
 
 def main():
     inputString = ""
@@ -27,7 +28,6 @@ def main():
 
                 # Split the string into each word
                 inputList = inputString.split()
-                print(inputList)
 
                 # Determine where the word "Player" is in the input string
                 playerIndex = -1
@@ -48,14 +48,13 @@ def main():
                         keyword += inputList[i] + " "
 
                     keyword = keyword[0: len(keyword) - 1]
-                    print("keyword = " + keyword)
 
                     # Handle database keyword queries
                     invalidKeyword = True
                     #for possibleKeyword in possibleKeywords:
                     for i in range(len(possibleKeywords)):
                         if keyword == possibleKeywords[i]:
-                            keyword = databaseKeywords[i]
+                            dbKeyword = databaseKeywords[i]
                             invalidKeyword = False
                             if (queryCounter == 0):
                                 # Open the connection
@@ -64,7 +63,7 @@ def main():
                             if len(inputList) == playerIndex + 3:
                                 firstName = inputList[playerIndex + 1]
                                 lastName = inputList[playerIndex + 2]
-                                queryDatabaseKeyword(keyword, firstName, lastName, conn)
+                                queryDatabaseKeyword(dbKeyword, keyword, firstName, lastName, conn)
                             else:
                                 print("Invalid Syntax - need player's full name")
 
@@ -105,49 +104,95 @@ def main():
 
 def help():
     print("Possible keywords:")
-    print("'Time On Ice'")
-    print("'Goals'")
-    print("'Assists'")
-    print("'Shots'")
-    print("'Hits'")
-    print("'Saves")
-    print("'Teammates")
-    print("'List My Team")
+    print("  'Time On Ice'")
+    print("  'Goals'")
+    print("  'Assists'")
+    print("  'Shots'")
+    print("  'Hits'")
+    print("  'Saves'")
+    print("  'Teammates'")
+    print("  'List My Team'")
     print("")
     print("Example query:")
-    print("Goals Player Wayne Gretzky")
-    print("This will retrieve the total number of goals scored by the player with the name Wayne Gretzky")
+    print("  'Goals Player Zach Parise' -- This will retrieve the total number of goals scored by the player with the name Zach Parise")
+    print("")
     print("Example query:")
-    print("List My Team Player Wayne Gretzky")
-    print("This will retrieve the team Wayne Gretzky plays on")
+    print("  'List My Team Player Zach Parise' -- This will retrieve the team Zach Parise plays on")
+    print("")
     print("Example query:")
-    print("Teammates Player Wayne Gretzky Player Bob Smith")
-    print("This will retrieve whether or not Wayne Gretzky and Bob Smith are Teammates")
+    print("  'Teammates Player Zach Parise' -- This will retrieve all the teammats of Zach Parise in the database")
     print("")
     print("Or enter 'Quit' to exit")
 
 
 
 def loadData():
-    print("Loading data")
+    #print("Loading data")
+    conn = sql3Commands.sqlite3.connect('test.db')
+    cursor = conn.cursor()
+
+    cursor.execute("DROP TABLE game_goalie_stats")
+    cursor.execute("DROP TABLE game_skater_stats")
+    cursor.execute("DROP TABLE player_info")
+
+    cursor.execute("CREATE TABLE player_info (player_id PRIMARY KEY, firstName, lastName, primaryPosition);")
+    cursor.execute(
+        "CREATE TABLE game_goalie_stats (player_id, team_id, time_on_ice, assists, goals, shots, saves, FOREIGN KEY(player_id) REFERENCES player_info(player_id));")
+    cursor.execute(
+        "CREATE TABLE game_skater_stats (player_id, team_id, time_on_ice, assists, goals, shots, hits, FOREIGN KEY(player_id) REFERENCES player_info(player_id));")
+
+    # iterate through csv file add intormation to dictionary then to column datastructure
+    with open('game_goalie_stats.csv', newline='', encoding='utf-8') as goalie_stats_csv:
+        goalie_stats_dict = csv.DictReader(goalie_stats_csv)
+        goalie_stats_colm = [
+            (i['player_id'], i['team_id'], i['time_on_ice'], i['assists'], i['goals'], i['shots'], i['saves']) for i in
+            goalie_stats_dict]
+    goalie_stats_csv.close()
+    with open('GameSkaterStats.csv', newline='', encoding='utf-8-sig') as game_skater_csv:
+        # print(game_skater_csv)
+        game_skater_dict = csv.DictReader(game_skater_csv)
+        skater_stats_colm = [
+            (j['player_id'], j['team_id'], j['time_on_ice'], j['assists'], j['goals'], j['shots'], j['hits']) for j in
+            game_skater_dict]
+    game_skater_csv.close()
+    with open('PlayerInfo1.csv', newline='', encoding='utf-8-sig') as player_info_csv:
+        player_info_dict = csv.DictReader(player_info_csv)
+        player_info_colm = [(i['player_id'], i['firstName'], i['lastName'], i['primaryPosition']) for i in
+                            player_info_dict]
+    # Inserting data into the different tables
+    cursor.executemany(
+        "INSERT INTO game_goalie_stats ( player_id, team_id, time_on_ice, assists, goals, shots, saves ) VALUES (?, ?, ?, ?, ?, ?, ?);",
+        goalie_stats_colm)
+    cursor.executemany(
+        "INSERT INTO game_skater_stats ( player_id, team_id, time_on_ice, assists, goals, shots, hits ) VALUES (?, ?, ?, ?, ?, ?, ?);",
+        skater_stats_colm)
+    cursor.executemany(
+        "INSERT INTO player_info ( player_id, firstName, lastName, primaryPosition ) VALUES (?, ?, ?, ?);",
+        player_info_colm)
+
+    conn.commit()
+    conn.close()
 
 
-def queryDatabaseKeyword(keyword, firstName, lastName, conn):
+def queryDatabaseKeyword(dbKeyword, keyword, firstName, lastName, conn):
     #print("Searching database for " + keyword + " from " + firstName + " " + lastName)
-    value = sql3Commands.retrieveDataFirstLast(firstName, lastName, keyword, conn)
-    print(value)
+
+    value = sql3Commands.retrieveDataFirstLast(firstName, lastName, dbKeyword, conn)
+
+    print(keyword + " = " + str(value))
 
 def queryDatabaseListMyTeam(firstName, lastName, conn):
     #print("Searching database the team of " + firstName + " " + lastName)
     value = sql3Commands.queryDatabaseMyTeamName(firstName, lastName, conn)
-    print(value)
+    print("Team = " + str(value))
 
 
 def queryDatabaseTeammates(firstName, lastName, conn):
     #print("Searching database for teammates of " + firstName + " " + lastName)
     value = sql3Commands.queryDatabaseListMyTeamMates(firstName, lastName, conn)
+    print("Teammates:")
     for name in value:
-        print(name[0] + " " + name[1])
+        print("  " + name[0] + " " + name[1])
 
 
 main()
